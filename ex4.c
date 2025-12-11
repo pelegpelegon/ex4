@@ -27,6 +27,12 @@
 #define SUDOKU_GRID_SIZE 9
 #define SUDOKU_SUBGRID_SIZE 3
 
+/***************************
+***** GENERAL CONSTANTS ****
+****************************/
+#define TRUE 1
+#define FALSE 0
+
 
 /***************************
 * USER INTEFACE PROTOTYPES *
@@ -44,7 +50,9 @@ void task5SolveSudoku();
 *****************************/
 
 void task1ReversePhraseImplementation();
+void task1ReversePhraseRecursion();
 int task2CheckPalindromeImplementation(int);
+int task2CheckPalindromeRecursion(int, int);
 void task3GenerateSentencesImplementation(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int);
 int task4SolveZipBoardImplementation(int[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int, int, int, int);
 int task5SolveSudokuImplementation(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
@@ -272,15 +280,47 @@ void printSudoku(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE])
 
 
 void task1ReversePhraseImplementation(){
+    char firstChar;
+    scanf("%c", &firstChar);
+    printf("\nThe reversed phrase is:\n");
 
+    task1ReversePhraseRecursion();
+    //prints the char that was lost in scanf
+    printf("%c", firstChar);
+}
+
+
+void task1ReversePhraseRecursion(){
+    int character;
+    character = getchar();
+    if(character != '\n'){
+        task1ReversePhraseRecursion();
+        printf("%c", character);
+    }
 }
 
 
 int task2CheckPalindromeImplementation(int length)
 {
-    return 0;
+    char firstChar;
+    int distenceFromPhraseMiddle = length/2 - 1;
+    int IsEven = (length % 2 == 0)? 1:0;
+    /* plus one to account for the \0 in a string */
+
+    printf("Please insert the phrase to check:\n");
+    scanf("%c", &firstChar);
+    return firstChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle, IsEven);
 }
 
+int task2CheckPalindromeRecursion(int distenceFromPhraseMiddle, int IsEven){
+    int curChar = getchar();
+    if((distenceFromPhraseMiddle == 0) && IsEven)
+        return curChar;
+    if((distenceFromPhraseMiddle == 0) || curChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle - 1))
+        return getchar();
+    else
+        return '\n';
+}
 
 void task3GenerateSentencesImplementation(char subjects[][LONGEST_TERM+1], int subjectsCount, char verbs[][LONGEST_TERM+1], int verbsCount, char objects[][LONGEST_TERM+1], int objectsCount){
 
