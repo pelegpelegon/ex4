@@ -33,7 +33,11 @@
 #define TRUE 1
 #define FALSE 0
 
+#define NOT_PALINDROME_CHAR '\n'
 
+#define RECURSING_OBJECTS 1
+#define RECURSING_VERBS 2
+#define RECURSING_SUBJECTS 3
 /***************************
 * USER INTEFACE PROTOTYPES *
 ****************************/
@@ -54,6 +58,7 @@ void task1ReversePhraseRecursion();
 int task2CheckPalindromeImplementation(int);
 int task2CheckPalindromeRecursion(int, int);
 void task3GenerateSentencesImplementation(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int);
+void task3GenerateSentencesRecursion(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, int, int, int, int, int);
 int task4SolveZipBoardImplementation(int[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int, int, int, int);
 int task5SolveSudokuImplementation(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
 
@@ -307,7 +312,6 @@ int task2CheckPalindromeImplementation(int length)
     int IsEven = (length % 2 == 0)? 1:0;
     /* plus one to account for the \0 in a string */
 
-    printf("Please insert the phrase to check:\n");
     scanf("%c", &firstChar);
     return firstChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle, IsEven);
 }
@@ -316,14 +320,45 @@ int task2CheckPalindromeRecursion(int distenceFromPhraseMiddle, int IsEven){
     int curChar = getchar();
     if((distenceFromPhraseMiddle == 0) && IsEven)
         return curChar;
-    if((distenceFromPhraseMiddle == 0) || curChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle - 1))
+    if((distenceFromPhraseMiddle == 0) || curChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle - 1, IsEven))
         return getchar();
     else
-        return '\n';
+        return NOT_PALINDROME_CHAR;
 }
 
 void task3GenerateSentencesImplementation(char subjects[][LONGEST_TERM+1], int subjectsCount, char verbs[][LONGEST_TERM+1], int verbsCount, char objects[][LONGEST_TERM+1], int objectsCount){
+    task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_SUBJECTS, 0, 0, 0, 1)
+}
 
+
+void task3GenerateSentencesRecursion(char subjects[][LONGEST_TERM+1], int subjectsCount, char verbs[][LONGEST_TERM+1], int verbsCount, char objects[][LONGEST_TERM+1], int objectsCount, int recursiveType, int subject, int verb, int object, int count){
+    switch(recursiveType){
+        case RECURSING_OBJECTS:
+            printf("%d. %s %s %s", count, subjects[subject], verbs[verb], objects[object]);
+
+             /* if not last object goes to the next one */
+            if(object != objectsCount - 1)
+                task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, recursiveType, subject, verb, object + 1, count + 1);
+            break;
+        
+        case RECURSING_VERBS:
+            /* runs through the subjects for this verb */
+            task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_OBJECTS, subject, verb, 0, count);
+
+            /* if not last verb goes to the next one */
+            if(verb != verbsCount - 1)
+                task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_VERBS, subject, verb + 1, object, count);
+            break;
+
+        case RECURSING_SUBJECTS:
+            /* runs through the verbs for this subject */
+            task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_VERBS, subject, 0, object, count);
+
+            /* if not last subject goes to the next one */
+            if(subject != subjectsCount - 1)
+                task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_SUBJECTS, subject + 1, verb, object, count);
+
+    }
 }
 
 
