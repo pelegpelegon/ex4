@@ -82,7 +82,7 @@ int isInBounds(int, int, int);
 void task1ReversePhraseRecursion();
 int task2CheckPalindromeRecursion(int, int);
 void task3GenerateSentencesRecursion(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, int, int, int, int, int);
-
+int task4SolveZipBoardRecursion(int[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int, int, int, int, int, int);
 
 
 /******************************
@@ -386,7 +386,7 @@ void task3GenerateSentencesRecursion(char subjects[][LONGEST_TERM+1], int subjec
 
 
 int task4SolveZipBoardImplementation(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int startR, int startC, int highest){
-    return 0;
+    return task4SolveZipBoardRecursion(board, solution, size, startR, startC, highest, 1, 1);
 }
 
 
@@ -403,7 +403,6 @@ int task4SolveZipBoardRecursion(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE],
 
     if(board[placeR][placeC] == highest){
         if(MoveCount == size * size){
-            solution[placeR][placeC] = 'X';
             return 1;
         }
         else{
@@ -416,43 +415,42 @@ int task4SolveZipBoardRecursion(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE],
     }
 
 
-    oldValue = board[placeR][placeR];
-    board[placeR][placeR] = highest + 1;
+    oldValue = board[placeR][placeC];
+    board[placeR][placeC] = highest + 1;
 
+    /* checks up */
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR - 1, placeC, highest, currentCount, MoveCount + 1)){
+        solution[placeR][placeC] = UP;
+        return 1;
+    }
+
+    /* checks down */ 
     if(task4SolveZipBoardRecursion(board, solution, size, placeR + 1, placeC, highest, currentCount, MoveCount + 1)){
-        solution[placeR][placeC] = 'U';
+        solution[placeR][placeC] = DOWN;
+        return 1;
     }
 
-
-    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC, highest, currentCount, MoveCount)){
-
+    /* checks left */
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC - 1, highest, currentCount, MoveCount + 1)){
+        solution[placeR][placeC] = LEFT;
+        return 1;
     }
 
-
-    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC, highest, currentCount, MoveCount)){
-
+    /* checks right */
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC + 1, highest, currentCount, MoveCount + 1)){
+        solution[placeR][placeC] = RIGHT;
+        return 1;
     }
 
-
-    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC, highest, currentCount, MoveCount)){
-
-    }
-
-
-
-    if(isInBounds(size, placeR, placeC)){
-        if(board[placeR][placeC] <= currentCount + 1){
-            if((board[placeR][placeC] == highest) && (MoveCount != size * size)){
-
-            }
-        }
-    }
+    board[placeR][placeR] = oldValue;
+    return 0;
+    
 }
 
-
+/*
 int isMoveValid(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int placeR, int placeC, int highest, int currentCount, int MoveCount){
 
-}
+}*/
 
 
 
