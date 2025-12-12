@@ -442,15 +442,11 @@ int task4SolveZipBoardRecursion(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE],
         return 1;
     }
 
-    board[placeR][placeR] = oldValue;
+    board[placeR][placeC] = oldValue;
     return 0;
     
 }
 
-/*
-int isMoveValid(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int placeR, int placeC, int highest, int currentCount, int MoveCount){
-
-}*/
 
 
 
