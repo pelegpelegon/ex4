@@ -38,6 +38,17 @@
 #define RECURSING_OBJECTS 1
 #define RECURSING_VERBS 2
 #define RECURSING_SUBJECTS 3
+
+/***************************
+*** ZIP PUZZLE CONSTANTS ***
+****************************/
+
+#define UP 'U'
+#define DOWN 'D'
+#define LEFT 'L'
+#define RIGHT 'R'
+#define LAST_TILE 'X'
+
 /***************************
 * USER INTEFACE PROTOTYPES *
 ****************************/
@@ -54,11 +65,8 @@ void task5SolveSudoku();
 *****************************/
 
 void task1ReversePhraseImplementation();
-void task1ReversePhraseRecursion();
 int task2CheckPalindromeImplementation(int);
-int task2CheckPalindromeRecursion(int, int);
 void task3GenerateSentencesImplementation(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int);
-void task3GenerateSentencesRecursion(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, int, int, int, int, int);
 int task4SolveZipBoardImplementation(int[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int, int, int, int);
 int task5SolveSudokuImplementation(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
 
@@ -69,6 +77,11 @@ int task5SolveSudokuImplementation(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
 
 int readTerms(char[][LONGEST_TERM+1], int, char[]);
 void printSudoku(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
+int isInBounds(int, int, int);
+
+void task1ReversePhraseRecursion();
+int task2CheckPalindromeRecursion(int, int);
+void task3GenerateSentencesRecursion(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, int, int, int, int, int);
 
 
 
@@ -326,15 +339,16 @@ int task2CheckPalindromeRecursion(int distenceFromPhraseMiddle, int IsEven){
         return NOT_PALINDROME_CHAR;
 }
 
+
 void task3GenerateSentencesImplementation(char subjects[][LONGEST_TERM+1], int subjectsCount, char verbs[][LONGEST_TERM+1], int verbsCount, char objects[][LONGEST_TERM+1], int objectsCount){
-    task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_SUBJECTS, 0, 0, 0, 1)
+    task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_SUBJECTS, 0, 0, 0, 1);
 }
 
 
 void task3GenerateSentencesRecursion(char subjects[][LONGEST_TERM+1], int subjectsCount, char verbs[][LONGEST_TERM+1], int verbsCount, char objects[][LONGEST_TERM+1], int objectsCount, int recursiveType, int subject, int verb, int object, int count){
     switch(recursiveType){
         case RECURSING_OBJECTS:
-            printf("%d. %s %s %s", count, subjects[subject], verbs[verb], objects[object]);
+            printf("%d. %s %s %s\n", count, subjects[subject], verbs[verb], objects[object]);
 
              /* if not last object goes to the next one */
             if(object != objectsCount - 1)
@@ -347,7 +361,10 @@ void task3GenerateSentencesRecursion(char subjects[][LONGEST_TERM+1], int subjec
 
             /* if not last verb goes to the next one */
             if(verb != verbsCount - 1)
+            {
+                count += objectsCount;
                 task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_VERBS, subject, verb + 1, object, count);
+            }
             break;
 
         case RECURSING_SUBJECTS:
@@ -356,15 +373,91 @@ void task3GenerateSentencesRecursion(char subjects[][LONGEST_TERM+1], int subjec
 
             /* if not last subject goes to the next one */
             if(subject != subjectsCount - 1)
+            {
+                count += objectsCount * verbsCount;
                 task3GenerateSentencesRecursion(subjects, subjectsCount, verbs, verbsCount, objects, objectsCount, RECURSING_SUBJECTS, subject + 1, verb, object, count);
+            }
+            break;
+
+        default: break;
 
     }
 }
 
 
-int task4SolveZipBoardImplementation(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int startR, int startC, int highest)
-{
+int task4SolveZipBoardImplementation(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int startR, int startC, int highest){
     return 0;
+}
+
+
+int task4SolveZipBoardRecursion(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int placeR, int placeC, int highest, int currentCount, int MoveCount){
+    /* to put back the value that was changed on the board to mark that i was already there */
+    int oldValue; 
+    if(!isInBounds(size, placeR, placeC)){
+        return 0;
+    }
+
+    if(board[placeR][placeC] > currentCount + 1){
+        return 0;
+    }
+
+    if(board[placeR][placeC] == highest){
+        if(MoveCount == size * size){
+            solution[placeR][placeC] = 'X';
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    if(board[placeR][placeC] == currentCount + 1){
+        currentCount++;
+    }
+
+
+    oldValue = board[placeR][placeR];
+    board[placeR][placeR] = highest + 1;
+
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR + 1, placeC, highest, currentCount, MoveCount + 1)){
+        solution[placeR][placeC] = 'U';
+    }
+
+
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC, highest, currentCount, MoveCount)){
+
+    }
+
+
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC, highest, currentCount, MoveCount)){
+
+    }
+
+
+    if(task4SolveZipBoardRecursion(board, solution, size, placeR, placeC, highest, currentCount, MoveCount)){
+
+    }
+
+
+
+    if(isInBounds(size, placeR, placeC)){
+        if(board[placeR][placeC] <= currentCount + 1){
+            if((board[placeR][placeC] == highest) && (MoveCount != size * size)){
+
+            }
+        }
+    }
+}
+
+
+int isMoveValid(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char solution[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int size, int placeR, int placeC, int highest, int currentCount, int MoveCount){
+
+}
+
+
+
+int isInBounds(int size, int placeR, int placeC){
+    return (placeC >= 0) && (placeR >= 0) && (placeC <= size - 1) && (placeR <= size - 1);
 }
 
 
