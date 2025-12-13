@@ -84,7 +84,12 @@ void task1ReversePhraseRecursion();
 int task2CheckPalindromeRecursion(int, int);
 void task3GenerateSentencesRecursion(char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, char[][LONGEST_TERM+1], int, int, int, int, int, int);
 int task4SolveZipBoardRecursion(int[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], char[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE], int, int, int, int, int, int);
+int task5SolveSudokuRecursion(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
 
+int isSudokuValid(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int);
+int sudokuCheckRow(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int, int);
+int sudokuCheckCol(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int, int);
+int sudokuCheckBox(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int, int, int);
 
 /******************************
 ********** MAIN MENU **********
@@ -462,10 +467,19 @@ int task5SolveSudokuImplementation(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]
 }
 
 
+int task5SolveSudokuRecursion(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]){
 
+}
+
+
+
+
+
+
+/* checks if the move i want to make is valid */
 int isSudokuValid(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int valueToCheck, int row, int col){
    /*
-    the boxes will be numbered and checked like this
+    the boxes will be numbered like this
     +-------+-------+-------+
     |   1   |   2   |   3   |
     +-------+-------+-------+
@@ -475,33 +489,14 @@ int isSudokuValid(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int valueToChec
     +-------+-------+-------+
     */
     
-    int boxNumber, boxRowCheck, boxColCheck;
-    
-    /* gets the box number */
-    /*
-    if (col > (SUDOKU_SUBGRID_SIZE - 1)){
-        if(col > (2 * SUDOKU_SUBGRID_SIZE - 1))
-            boxNumber 3;
+    int boxRowCheck, boxColCheck;
 
-        boxNumber = 2;
-    }
-    else
-        boxNumber = 1;
-
-
-    boxNumber += (col / 3) + (row / 3) * SUDOKU_SUBGRID_SIZE;
-    */
     boxRowCheck = (row / 3) * SUDOKU_SUBGRID_SIZE;
-    boxColCheck = (col / 3);
+    boxColCheck = (col / 3) * SUDOKU_SUBGRID_SIZE;
 
     return sudokuCheckRow(board, row, valueToCheck, col, 0) &&
            sudokuCheckCol(board, col, valueToCheck, row, 0) &&
-           sudokuCheckBox(board, valueToCheck, row, col, )
-
-
-
-
-
+           sudokuCheckBox(board, valueToCheck, row, col, boxRowCheck, boxColCheck);
 }
 
 
@@ -512,7 +507,7 @@ int sudokuCheckRow(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int rowToCheck
         return TRUE;
     }
 
-    if((colCheck != valueCol) && (board[rowToCheck][colCheck] == value)){
+    if((colCheck != valueCol) && (board[rowToCheck][colCheck] == valueToCheck)){
         return FALSE;
     }
 
@@ -527,7 +522,7 @@ int sudokuCheckCol(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int colToCheck
         return TRUE;
     }
 
-    if((rowCheck != valueRow) && (board[rowCheck][colToCheck] == value)){
+    if((rowCheck != valueRow) && (board[rowCheck][colToCheck] == valueToCheck)){
         return FALSE;
     }
 
@@ -548,19 +543,19 @@ int sudokuCheckBox(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int valueToChe
     if(rowToCheck == row && colToCheck == col){
 
         /* checks if last in the box */
-        if((col + 1) % SUDOKU_SUBGRID_SIZE == 0) && (row + 1) % SUDOKU_SUBGRID_SIZE == 0))
+        if(((col + 1) % SUDOKU_SUBGRID_SIZE == 0) && ((row + 1) % SUDOKU_SUBGRID_SIZE == 0))
             return TRUE;
 
-        return sudokuCheckBox(board, size, valueToCheck, row, col, nextRowCheck, nextColCheck);
+        return sudokuCheckBox(board, valueToCheck, row, col, nextRowCheck, nextColCheck);
     }
 
-    if(board[rowCheck][colToCheck] == valueToCheck){
+    if(board[rowToCheck][colToCheck] == valueToCheck){
         return FALSE;
     }
 
     /* checks if last in the box */
-    if((colToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0) && (rowToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0))
+    if(((colToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0) && ((rowToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0))
             return TRUE;
 
-    return sudokuCheckBox(board, size, valueToCheck, row, col, nextRowCheck, nextColCheck);
+    return sudokuCheckBox(board, valueToCheck, row, col, nextRowCheck, nextColCheck);
 }
