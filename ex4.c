@@ -28,7 +28,7 @@
 #define SUDOKU_SUBGRID_SIZE 3
 
 /***************************
-***** GENERAL CONSTANTS ****
+**** GENERAL PARAMETERS ****
 ****************************/
 #define TRUE 1
 #define FALSE 0
@@ -39,8 +39,9 @@
 #define RECURSING_VERBS 2
 #define RECURSING_SUBJECTS 3
 
+
 /***************************
-*** ZIP PUZZLE CONSTANTS ***
+*** ZIP PUZZLE PARAMETERS **
 ****************************/
 
 #define UP 'U'
@@ -448,14 +449,118 @@ int task4SolveZipBoardRecursion(int board[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE],
 }
 
 
-
-
 int isInBounds(int size, int placeR, int placeC){
     return (placeC >= 0) && (placeR >= 0) && (placeC <= size - 1) && (placeR <= size - 1);
 }
 
 
+
+
 int task5SolveSudokuImplementation(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE])
 {
-    return 0;
+    return isSudokuValid(board, 1, 0, 0);
+}
+
+
+
+int isSudokuValid(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int valueToCheck, int row, int col){
+   /*
+    the boxes will be numbered and checked like this
+    +-------+-------+-------+
+    |   1   |   2   |   3   |
+    +-------+-------+-------+
+    |   4   |   5   |   6   |
+    +-------+-------+-------+
+    |   7   |   8   |   9   |
+    +-------+-------+-------+
+    */
+    
+    int boxNumber, boxRowCheck, boxColCheck;
+    
+    /* gets the box number */
+    /*
+    if (col > (SUDOKU_SUBGRID_SIZE - 1)){
+        if(col > (2 * SUDOKU_SUBGRID_SIZE - 1))
+            boxNumber 3;
+
+        boxNumber = 2;
+    }
+    else
+        boxNumber = 1;
+
+
+    boxNumber += (col / 3) + (row / 3) * SUDOKU_SUBGRID_SIZE;
+    */
+    boxRowCheck = (row / 3) * SUDOKU_SUBGRID_SIZE;
+    boxColCheck = (col / 3);
+
+    return sudokuCheckRow(board, row, valueToCheck, col, 0) &&
+           sudokuCheckCol(board, col, valueToCheck, row, 0) &&
+           sudokuCheckBox(board, valueToCheck, row, col, )
+
+
+
+
+
+}
+
+
+/* checks if the new value placed cause a mistake in the row */
+int sudokuCheckRow(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int rowToCheck, int valueToCheck, int valueCol, int colCheck){
+
+    if(colCheck >= SUDOKU_GRID_SIZE){
+        return TRUE;
+    }
+
+    if((colCheck != valueCol) && (board[rowToCheck][colCheck] == value)){
+        return FALSE;
+    }
+
+    return sudokuCheckRow(board, rowToCheck, valueToCheck, valueCol, colCheck + 1);
+}
+
+
+/* checks if the new value placed cause a mistake in the column*/
+int sudokuCheckCol(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int colToCheck, int valueToCheck, int valueRow, int rowCheck){
+
+    if(rowCheck >= SUDOKU_GRID_SIZE){
+        return TRUE;
+    }
+
+    if((rowCheck != valueRow) && (board[rowCheck][colToCheck] == value)){
+        return FALSE;
+    }
+
+    return sudokuCheckRow(board, colToCheck, valueToCheck, valueRow, rowCheck + 1);
+}
+
+
+/* checks if the new value placed cause a mistake in the column*/
+int sudokuCheckBox(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int valueToCheck, int row, int col, int rowToCheck, int colToCheck){
+    int nextRowCheck, nextColCheck;
+
+    /* calculate the next row and column to Check */
+    nextRowCheck = ((rowToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0)? (rowToCheck - (SUDOKU_SUBGRID_SIZE - 1)):(rowToCheck + 1);
+
+    nextColCheck = ((colToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0)? (colToCheck - (SUDOKU_SUBGRID_SIZE - 1)):(colToCheck + 1);
+
+    
+    if(rowToCheck == row && colToCheck == col){
+
+        /* checks if last in the box */
+        if((col + 1) % SUDOKU_SUBGRID_SIZE == 0) && (row + 1) % SUDOKU_SUBGRID_SIZE == 0))
+            return TRUE;
+
+        return sudokuCheckBox(board, size, valueToCheck, row, col, nextRowCheck, nextColCheck);
+    }
+
+    if(board[rowCheck][colToCheck] == valueToCheck){
+        return FALSE;
+    }
+
+    /* checks if last in the box */
+    if((colToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0) && (rowToCheck + 1) % SUDOKU_SUBGRID_SIZE == 0))
+            return TRUE;
+
+    return sudokuCheckBox(board, size, valueToCheck, row, col, nextRowCheck, nextColCheck);
 }
