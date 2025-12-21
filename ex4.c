@@ -41,7 +41,7 @@
 #define RECURSING_SUBJECTS 3
 
 
-#define SKIP 0
+#define EMPTY 0
 /***************************
 *** ZIP PUZZLE PARAMETERS **
 ****************************/
@@ -97,7 +97,7 @@ int task4SolveZipBoardRecursion(int[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE],
                                 char[ZIP_MAX_GRID_SIZE][ZIP_MAX_GRID_SIZE],
                                 int, int, int, int, int, int);
 
-int task5SolveSudokuRecursion(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int, int, int);
+int task5SolveSudokuRecursion(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int);
 
 int isSudokuMoveValid(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int, int);
 int sudokuCheckRow(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int, int);
@@ -498,80 +498,54 @@ int isInBounds(int size, int placeR, int placeC){
 
 int task5SolveSudokuImplementation(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE])
 { 
-    return task5SolveSudokuRecursion(board, 0, 0, SKIP, SKIP, SKIP);
+    return task5SolveSudokuRecursion(board, 0, 0, 1);
 }
 
 
-int task5SolveSudokuRecursion(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int curRow,
-                              int curCol, int placedValue, int lastRow, int lastCol){
-
-    int nextRow, nextCol, isEmpty;
+int task5SolveSudokuRecursion(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int curRow, int curCol, int placedValue){
     
-    /* SKIP is the value sent if the tile is not empty */
-    if (placedValue != SKIP){
-        if(!isSudokuMoveValid(board, placedValue, lastRow, lastCol)){
-            return FALSE;
-        }
-
-        board[lastRow][lastCol] = placedValue;
-    }
-
-
-    if(curRow >= SUDOKU_GRID_SIZE){
+    int nextRow, nextCol;
+    
+    /* if finished going through the entire board */ 
+    if(curRow >= SUDOKU_GRID_SIZE)
         return TRUE;
+
+    /* 
+        if tries all the options in a value
+        and all failed returns false
+    */
+    if(placedValue > 9){
+        return FALSE;
     }
+
+    
     nextCol = ((curCol + 1) == SUDOKU_GRID_SIZE)? 0:(curCol + 1);
 
     nextRow = (nextCol == 0)? (curRow + 1): curRow;
 
-
-    isEmpty = board[curRow][curCol] == 0;
-
-    if(!isEmpty){
-        return task5SolveSudokuRecursion(board, nextRow, nextCol, SKIP, curRow, curCol);
+    /* if tile isn't empty goes to the next one */
+    if(board[curRow][curCol] != EMPTY){
+        return task5SolveSudokuRecursion(board, nextRow, nextCol, 1);
     }
 
-    /* checks all the possible options from 1 to 9 */
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 1, curRow, curCol)){
-        return TRUE;
+    /* 
+       check if the move is valid,
+       if so makes it and moves on to the next tile
+    */
+    if(isSudokuMoveValid(board, placedValue, curRow, curCol)){
+        board[curRow][curCol] = placedValue;
+
+        if(task5SolveSudokuRecursion(board, nextRow, nextCol, 1))
+            return TRUE;
+
+        /* 
+           back tracking if the decision tree returns false
+           and then tries the next value in this tile 
+        */
+        board[curRow][curCol] = EMPTY;
     }
 
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 2, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 3, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 4, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 5, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 6, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 7, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 8, curRow, curCol)){
-        return TRUE;
-    }
-
-    if(task5SolveSudokuRecursion(board, nextRow, nextCol, 9, curRow, curCol)){
-        return TRUE;
-    }
-
-    if (placedValue != SKIP) {
-        board[lastRow][lastCol] = 0;
-    }
-    return FALSE;
+    return task5SolveSudokuRecursion(board, curRow, curCol, placedValue + 1);
 }
 
 
