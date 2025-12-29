@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
+/*******************
+| * Peleg Sacher
+| * 333135440
+| * Assignment 4
+|******************/
 
 /***************************
 ******** Menu Items ********
@@ -87,6 +92,7 @@ int task5SolveSudokuImplementation(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
 int readTerms(char[][LONGEST_TERM+1], int, char[]);
 void printSudoku(int[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE]);
 int isInBounds(int, int, int);
+int cleanBuffer();
 
 void task1ReversePhraseRecursion();
 int task2CheckPalindromeRecursion(int, int);
@@ -342,10 +348,17 @@ int task2CheckPalindromeImplementation(int length){
     char firstChar;
     int distenceFromPhraseMiddle = length/2 - 1;
     int isEven = (length % 2 == 0)? 1:0;
+    int isPalindrome;
     /* plus one to account for the \0 in a string */
 
     scanf("%c", &firstChar);
-    return firstChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle, isEven);
+    isPalindrome = (firstChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle, isEven));
+    /*
+    in case its not a palindrome and the recursive function is cut early
+    the buffer wont be empty when it ends 
+    */
+    cleanBuffer();
+    return isPalindrome;
 }
 
 int task2CheckPalindromeRecursion(int distenceFromPhraseMiddle, int isEven){
@@ -357,10 +370,17 @@ int task2CheckPalindromeRecursion(int distenceFromPhraseMiddle, int isEven){
         (curChar == task2CheckPalindromeRecursion(distenceFromPhraseMiddle - 1, isEven)))
         return getchar();
 
-    else
+    else{
         return NOT_PALINDROME_CHAR;
+    }
 }
 
+int cleanBuffer(){
+    int chr = getchar();
+    if(chr == '\n')
+        return TRUE;
+    return cleanBuffer();
+}
 
 void task3GenerateSentencesImplementation(char subjects[][LONGEST_TERM+1], int subjectsCount,
                                           char verbs[][LONGEST_TERM+1], int verbsCount,
@@ -602,7 +622,7 @@ int sudokuCheckSubgrid(int board[SUDOKU_GRID_SIZE][SUDOKU_GRID_SIZE], int valueT
                        int subgridFirstRow, int subgridFirstCol){
     /* 
        checks if any of the boxes in the subgrid has the checked value 
-       (not brilliant but quite fast and it does the job)
+       (not brilliant but fast enough and it does the job)
     */
     if( (board[subgridFirstRow][subgridFirstCol] == valueToCheck)         ||
         (board[subgridFirstRow][subgridFirstCol + 1] == valueToCheck)     ||
